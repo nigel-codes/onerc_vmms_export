@@ -38,6 +38,30 @@ class TestProtectedLogins(TestCase):
                 login_crypto.open_envelope(bundle, key, source, sid)
             self.assertNotIn(self.hashed, str(caught.exception))
 
+    def test_hosting_public_key_formats_preserve_recipient_and_transport(self):
+        pem = self.public.decode()
+        variants = [pem, pem.replace("\n", " "), pem.replace("\n", ""),
+                    pem.replace("\n", "\\n"), pem.replace("\n", "\\r\\n")]
+        for value in variants:
+            with self.subTest(format=value[:30]):
+                self.assertEqual(login_crypto.fingerprint(value), login_crypto.fingerprint(self.public))
+                envelope = login_crypto.seal({"volunteer@example.org": self.hashed}, value, "source", "a" * 32)
+                self.assertEqual(login_crypto.open_envelope(envelope, self.private, "source", "a" * 32),
+                                 {"volunteer@example.org": self.hashed})
+
+    def test_invalid_and_weak_recipient_keys_remain_rejected(self):
+        from cryptography.hazmat.primitives import serialization
+        from cryptography.hazmat.primitives.asymmetric import ec, rsa
+        keys = [rsa.generate_private_key(public_exponent=65537, key_size=1024),
+                ec.generate_private_key(ec.SECP256R1())]
+        invalid = [None, "", "-----BEGIN PUBLIC KEY----- invalid -----END PUBLIC KEY-----",
+                   self.private]
+        invalid += [key.public_key().public_bytes(serialization.Encoding.PEM,
+                    serialization.PublicFormat.SubjectPublicKeyInfo) for key in keys]
+        for value in invalid:
+            with self.assertRaises(login_crypto.LoginTransferError):
+                login_crypto.public_key(value)
+
     def test_collection_is_limited_to_captured_users_and_local_hashes(self):
         source = MagicMock()
         source.tables.return_value = {"__Auth"}

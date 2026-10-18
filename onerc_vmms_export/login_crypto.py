@@ -3,6 +3,7 @@ import base64
 import hashlib
 import json
 import os
+import re
 
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
@@ -26,7 +27,21 @@ def _b64(value):
 
 def public_key(pem):
     try:
-        key = serialization.load_pem_public_key(pem.encode() if isinstance(pem, str) else pem)
+        encoded = pem.encode() if isinstance(pem, str) else pem
+        if isinstance(encoded, bytes):
+            # Hosting config inputs can flatten PEM line breaks or escape them.
+            encoded = encoded.strip().replace(b"\\r\\n", b"\n").replace(b"\\n", b"\n")
+            match = re.fullmatch(
+                rb"-----BEGIN PUBLIC KEY-----\s*([A-Za-z0-9+/=\s]+)-----END PUBLIC KEY-----",
+                encoded,
+            )
+        else:
+            match = None
+        if match:
+            der = base64.b64decode(re.sub(rb"\s+", b"", match.group(1)), validate=True)
+            key = serialization.load_der_public_key(der)
+        else:
+            key = serialization.load_pem_public_key(encoded)
         if not isinstance(key, rsa.RSAPublicKey) or key.key_size < 2048:
             raise ValueError()
         return key
