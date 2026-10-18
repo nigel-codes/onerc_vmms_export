@@ -1,0 +1,15 @@
+[project]
+name = "onerc_vmms_export"
+description = "Authenticated, resumable exports from legacy VMMS v15 to Redhive"
+authors = [{name = "Nigel", email = "nigelnathan2@gmail.com"}]
+requires-python = ">=3.10"
+readme = "README.md"
+dynamic = ["version"]
+dependencies = ["PyMySQL>=1.1.1,<2", "cryptography>=41", "requests>=2.31,<3"]
+
+[build-system]
+requires = ["flit_core>=3.4,<4"]
+build-backend = "flit_core.buildapi"
+
+[tool.bench.frappe-dependencies]
+frappe = ">=15.0.0,<16.0.0"
