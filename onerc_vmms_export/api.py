@@ -129,6 +129,8 @@ def build_snapshot(snapshot_id, owner):
             data["source"]["authentication_policy"]=authentication_policy(source)
             data["custom_fields"] = source.custom_fields()
             data["history"], data["schemas"] = history_extract(source, folder / "history-spool.sqlite")
+            from onerc_vmms_export.coverage import capture as capture_coverage
+            data["source"]["continuity"] = capture_coverage(source, data["schemas"])
             login_envelope, login_metadata = None, None
             if state.get("include_logins"):
                 assert_login_export(state["recipient_fingerprint"])

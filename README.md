@@ -1,9 +1,9 @@
 # VMMS Export (source app)
 
-Version **0.2.0**. Install on the **old VMMS v15 site**. The target uses `onerc_vmms_migrate`.
-This app exports allowlisted business fields and pinned attachment bytes through
+Version **0.3.0**. Install on the **old VMMS v15 site**. The target uses `onerc_vmms_migrate`.
+This app exports reviewed business scope, source column evidence and pinned attachment bytes through
 an authenticated API. It does not change people, approvals or memberships.
-Plaintext passwords, database credentials and API secrets are never exported. Existing local password hashes can use the separately enabled sealed-login path below.
+Known structured password, credential and API-secret fields are protected. Existing local password hashes use the separately enabled sealed-login path below. Preserve a complete sealed source backup for protected and uncaptured evidence.
 
 Requires a source **long worker** and enough private storage for the export's
 metadata and content-addressed file cache. Source files are read and copied to
@@ -103,3 +103,11 @@ and restore its original scheduler/worker state. Keep it frozen after a successf
 move so users cannot create records on the retired site.
 
 The snapshot records non-secret System Settings login-method flags, including email-link login and its expiry/rate limits, inside the same read-only transaction. The login audit returns these flags alongside credential coverage counts; SMTP/provider secrets and two-factor enrollment seeds are excluded.
+
+## Continuity export preparation — 0.3.0
+
+This version expands historical capture to include Navari M-Pesa, full noncredential User records, change/security/workflow/deletion logs and additional finance/permission dependencies. Physical source-only columns are retained, and a source.continuity manifest records every SQL table/column/type, uncaptured/protected obligations and source naming rules/counters/conditions.
+
+Known structured credentials are excluded or protected, including nested Version/deletion payloads. Unparsed historical JSON is marked for protected backup rather than exposed as unchecked text. A complete sealed source backup is still required; the manifest does not certify full source retention or a completed migration.
+
+Use with receiver 0.5.0 and a fresh reviewed capture. Updating code does not add missing records to an old capture. Preparation did not run an export or change source data. Site deployment/runtime rehearsal remains pending.

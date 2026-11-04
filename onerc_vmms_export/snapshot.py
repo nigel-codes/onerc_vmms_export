@@ -129,6 +129,7 @@ def build(root, snapshot_id, source_id, owner, data, source_site, file_records=N
         data["source"] = {"source_id": source_id, "db_name": source_id,
                           "site_path": source_id, "apps": data["source"].get("apps"),
                           "snapshot_id": snapshot_id, "protocol": PROTOCOL,
+                          "continuity": data["source"].get("continuity", {}),
                           "authentication_policy": {field:value for field,value in
                               (data["source"].get("authentication_policy") or {}).items()
                               if field in ('login_with_email_link','login_with_email_link_expiry',

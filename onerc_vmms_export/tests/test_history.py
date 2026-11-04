@@ -32,12 +32,12 @@ class Source:
 
 
 class TestHistoryScope(TestCase):
-    def test_business_scope_includes_children_without_authentication_or_unknown_columns(self):
+    def test_business_scope_preserves_users_and_physical_columns_without_credentials(self):
         records,schemas=history.extract(Source())
-        self.assertEqual(set(schemas),{'Buzz Event','Event Child'})
-        self.assertEqual(len(records),2)
+        self.assertEqual(set(schemas),{'Buzz Event','Event Child','User'})
+        self.assertEqual(len(records),3)
         event=records[history.record_key('Buzz Event','old-event')]['record']
-        self.assertEqual(event,{'name':'old-event','title':'Mission','docstatus':1})
+        self.assertEqual(event,{'name':'old-event','title':'Mission','docstatus':1,'unknown_column':'not exported'})
         self.assertEqual(schemas['Buzz Event']['omitted_secret_fields'],['api_key','private_secret'])
         child=records[history.record_key('Event Child','child')]['record']
         self.assertEqual(child['parent'],'old-event')
@@ -59,4 +59,4 @@ class TestHistoryScope(TestCase):
             result=snapshot.build(path/'exports','a'*32,'b'*32,'manager',
                 {'source':{},'history':stored,'schemas':stored_schemas},path)
             self.assertEqual(result['counts']['history'],len(expected))
-            self.assertEqual(len(snapshot.page(path/'exports','a'*32,'history')['rows']),2)
+            self.assertEqual(len(snapshot.page(path/'exports','a'*32,'history')['rows']),len(expected))
