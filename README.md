@@ -1,6 +1,6 @@
 # VMMS Export (source app)
 
-Version **0.3.0**. Install on the **old VMMS v15 site**. The target uses `onerc_vmms_migrate`.
+Version **0.4.0**. Install on the **old VMMS v15 site**. The target uses `onerc_vmms_migrate`.
 This app exports reviewed business scope, source column evidence and pinned attachment bytes through
 an authenticated API. It does not change people, approvals or memberships.
 Known structured password, credential and API-secret fields are protected. Existing local password hashes use the separately enabled sealed-login path below. Preserve a complete sealed source backup for protected and uncaptured evidence.
@@ -111,3 +111,10 @@ This version expands historical capture to include Navari M-Pesa, full noncreden
 Known structured credentials are excluded or protected, including nested Version/deletion payloads. Unparsed historical JSON is marked for protected backup rather than exposed as unchecked text. A complete sealed source backup is still required; the manifest does not certify full source retention or a completed migration.
 
 Use with receiver 0.5.0 and a fresh reviewed capture. Updating code does not add missing records to an old capture. Preparation did not run an export or change source data. Site deployment/runtime rehearsal remains pending.
+
+
+## Effective person metadata — 0.4.0
+
+Pair with receiver 0.6.0 and create a fresh reviewed capture. Operational child extraction and historical schema discovery now honor effective DocField/Custom Field/Property Setter definitions. This fixes User.education overrides to Employee Education and preserves the site's actual education-level options.
+
+The operational payload includes User/Applicant LinkedIn and GitHub, User biography and Employee.custom_profession. Source metadata carries profile_mapping_version=2 through transport; old captures do not gain these fields by updating code. The receiver preserves insurance and old consent only as evidence, without creating current answers. No business records are rewritten by extraction.

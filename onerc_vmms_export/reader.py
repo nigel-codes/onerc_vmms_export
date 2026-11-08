@@ -22,6 +22,8 @@ import frappe
 import pymysql
 import pymysql.cursors
 
+from onerc_vmms_export.effective_metadata import effective_fields
+
 
 
 # Frappe's standard bookkeeping columns. `select()` always fetches `name`; these
@@ -147,17 +149,11 @@ class DatabaseSource:
 		return rows
 
 	def child_doctype(self, parent: str, fieldname: str) -> str | None:
-		"""Which child doctype a table field points at, standard or custom."""
-		for source in ("DocField", "Custom Field"):
-			parent_col = "parent" if source == "DocField" else "dt"
-			rows = self.sql(
-				f"select options from `tab{source}` where {parent_col} = %s and fieldname = %s"
-				" and fieldtype in ('Table', 'Table MultiSelect') limit 1",
-				(parent, fieldname),
-			)
-			if rows and rows[0]["options"]:
-				return rows[0]["options"]
-		return None
+		"""Use effective metadata, including site-level Property Setters."""
+		if getattr(self, "_effective_fields_cache", None) is None:
+			self._effective_fields_cache = effective_fields(self)
+		field = self._effective_fields_cache.get(parent, {}).get(fieldname, {})
+		return field.get("options") if field.get("fieldtype") in ("Table", "Table MultiSelect") else None
 
 	def children(self, parent: str, fieldname: str) -> dict[str, list[dict]]:
 		"""Child rows of one table field, grouped by parent name, in idx order."""

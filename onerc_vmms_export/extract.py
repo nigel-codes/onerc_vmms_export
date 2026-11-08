@@ -26,6 +26,8 @@ PERSON_FIELDS = [
 	"administrative_location",
 	"sub_location",
 	"profession",
+	"linkedin",
+	"github",
 	"blood_group",
 	"number_of_dependants",
 	"access_to_internet",
@@ -69,6 +71,7 @@ USER_FIELDS = [
 	"birth_date",
 	"creation",
 	"last_login",
+	"bio",
 	*PERSON_FIELDS,
 ]
 USER_TABLES = [*PERSON_TABLES, "skill", "internship", "social_logins", "roles"]
@@ -117,6 +120,7 @@ EMPLOYEE_FIELDS = [
 	"relieving_date",
 	"is_volunteer",
 	"job_applicant",
+	"custom_profession",
 	"image",
 	"person_to_be_contacted",
 	"emergency_phone_number",
@@ -164,6 +168,7 @@ def extract(source: Source) -> dict:
 
 	return {
 		"source": {
+			"profile_mapping_version": 2,
 			"db_name": source.db_name,
 			"site_path": source.site_path,
 			"apps": source.frappe_version(),

@@ -9,6 +9,8 @@ import re
 import sqlite3
 from pathlib import Path
 
+from onerc_vmms_export.effective_metadata import effective_fields
+
 MODULES = {'Volunteer and Member Management', 'Buzz', 'Events', 'Ticketing', 'Proposals', 'Buzz Marketing',
            'Frappe Mpsa Payments', 'Stanbic'}
 EXTRA = {
@@ -78,10 +80,7 @@ class DiskRecords:
 
 def extract(source, spool_path=None):
     types = {r['name']: r for r in source.select('DocType', ['module', 'istable', 'issingle'])}
-    fields = {}
-    for table, parent in (('DocField', 'parent'), ('Custom Field', 'dt')):
-        for row in source.sql(f'SELECT `{parent}` AS dt,fieldname,label,fieldtype,options,reqd,hidden,read_only FROM `tab{table}` ORDER BY idx'):
-            fields.setdefault(row['dt'], {})[row['fieldname']] = row
+    fields = effective_fields(source)
     secret_fields = SECRET_FIELDS | {f['fieldname'].casefold() for fs in fields.values()
                                      for f in fs.values() if f['fieldtype'] == 'Password'}
     selected = {n for n, r in types.items() if r.get('module') in MODULES} | (EXTRA & set(types))
