@@ -12,7 +12,12 @@ from pathlib import Path
 from onerc_vmms_export.effective_metadata import effective_fields
 
 MODULES = {'Volunteer and Member Management', 'Buzz', 'Events', 'Ticketing', 'Proposals', 'Buzz Marketing',
-           'Frappe Mpsa Payments', 'Stanbic'}
+           'Frappe Mpsa Payments', 'Stanbic',
+           # Helpdesk tickets, their comments, activity, teams, agents, SLA and
+           # vocabulary (0.5.0). Their emails, comments, assignments, files and
+           # changes are in the whole Communication, Comment, ToDo, File and
+           # Version tables below; the receiver keeps the ticket rows only.
+           'Helpdesk'}
 EXTRA = {
     'Employee', 'Job Applicant', 'Project', 'Task', 'Event', 'Training Event',
     'Certification', 'Timesheet', 'Attendance', 'LMS Course', 'LMS Enrollment',

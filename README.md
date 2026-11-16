@@ -1,6 +1,6 @@
 # VMMS Export (source app)
 
-Version **0.4.0**. Install on the **old VMMS v15 site**. The target uses `onerc_vmms_migrate`.
+Version **0.5.0**. Install on the **old VMMS v15 site**. The target uses `onerc_vmms_migrate`.
 This app exports reviewed business scope, source column evidence and pinned attachment bytes through
 an authenticated API. It does not change people, approvals or memberships.
 Known structured password, credential and API-secret fields are protected. Existing local password hashes use the separately enabled sealed-login path below. Preserve a complete sealed source backup for protected and uncaptured evidence.
@@ -118,3 +118,18 @@ Use with receiver 0.5.0 and a fresh reviewed capture. Updating code does not add
 Pair with receiver 0.6.0 and create a fresh reviewed capture. Operational child extraction and historical schema discovery now honor effective DocField/Custom Field/Property Setter definitions. This fixes User.education overrides to Employee Education and preserves the site's actual education-level options.
 
 The operational payload includes User/Applicant LinkedIn and GitHub, User biography and Employee.custom_profession. Source metadata carries profile_mapping_version=2 through transport; old captures do not gain these fields by updating code. The receiver preserves insurance and old consent only as evidence, without creating current answers. No business records are rewritten by extraction.
+
+
+## Helpdesk tickets — 0.5.0
+
+The history capture now takes the Helpdesk module: HD Ticket, HD Ticket Comment,
+HD Ticket Activity, teams and their members, agents, ticket statuses, priorities,
+types, feedback options, the SLA with its days, priorities and holiday list,
+articles, notifications and saved views. Single settings doctypes are not
+captured, as before. The tickets' emails (Communication), comments, assignments
+(ToDo), files and change history (Version) were already captured as whole
+tables; nothing about them changes.
+
+Pair with receiver 0.10.0 and take a fresh capture after deploying: a capture
+taken with 0.4.0 has no tickets, and the receiver's history import reports that
+as a setup error. Extraction stays read-only.
